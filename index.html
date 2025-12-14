@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visor Nativo Protegido</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background-color: #525659;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Contenedor principal para poder posicionar la máscara */
+        .pdf-container {
+            position: relative;
+            width: 100%;
+            height: 100vh; /* Altura completa de la ventana */
+        }
+
+        embed {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* --- EL TRUCO DE SEGURIDAD --- */
+        /* Esta caja es transparente y flota sobre la esquina superior derecha */
+        .block-download-overlay {
+            position: absolute;
+            top: 0;
+            right: 0;
+            /* Ajusta el ancho para cubrir solo los botones de descargar/imprimir */
+            width: 150px; 
+            height: 60px; /* Altura de la barra de herramientas nativa aprox */
+            
+            /* Color rojo semitransparente para que veas dónde está (luego lo cambias a transparent) */
+            /* background-color: rgba(255, 0, 0, 0.3); */ 
+            background-color: transparent; 
+            
+            z-index: 9999; /* Se asegura de estar encima del PDF */
+            cursor: default; /* Mantiene el cursor normal para no levantar sospechas */
+        }
+
+        /* Opcional: Bloquea también el menú lateral si aparece el botón allí */
+        .block-menu-overlay {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            width: 50px;
+            height: 100%;
+            background-color: transparent;
+            z-index: 9998;
+            display: none; /* Actívalo si ves que pueden descargar por un menú lateral */
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;"> <div class="pdf-container">
+        <div class="block-download-overlay" title="Función deshabilitada"></div>
+        
+        <embed 
+            src="3098fed8-8756-4e87-b5f8-4ab12686f1ed.pdf#toolbar=1&navpanes=0" 
+            type="application/pdf"
+        />
+    </div>
+
+    <script>
+        // Bloqueo de atajos de teclado (Ctrl+S, Ctrl+P)
+        document.addEventListener('keydown', function(e) {
+            // Detectar Ctrl (Windows) o Command (Mac)
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key.toLowerCase()) {
+                    case 's': // Guardar
+                    case 'p': // Imprimir
+                    case 'k': // A veces abre menús en navegadores
+                        e.preventDefault();
+                        console.log("Acción bloqueada por seguridad");
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
